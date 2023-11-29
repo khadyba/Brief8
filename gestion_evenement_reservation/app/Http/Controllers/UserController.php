@@ -69,7 +69,7 @@ public function store(Request $request)
 } elseif($validatedData['Role'] === 'associations') {
 
     if ($user->save()) {
-        return view('Association.Evenement.FormuCompteAsso');
+        return view('Authentification.FormConnection');
     }
 
 

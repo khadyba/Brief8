@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Evenement;
+use App\Models\Association;
 use Illuminate\Http\Request;
 
 class AssociationController extends Controller
@@ -30,6 +33,29 @@ class AssociationController extends Controller
     public function store(Request $request)
     {
         //  ici les validation pour la creation de l'evenement
+        $validata=$request->validate([
+            'nomEvenement' =>'required',
+            'description' =>'required',
+            'status' =>'required',
+            'image' =>'required',
+            'date_limite_inscription' =>'required',
+            'date_evenement' =>'required',
+            'association_id' =>'required',
+        ]);
+
+        $image=$request->file('image');
+        if ($image !== null && !$image->getError()) {
+            $validata['image'] = $image->store('image', 'public');
+        }
+             $evenement= new Evenement($validata);
+             if ($evenement->save()) {
+                // ici on se redirige vers la liste des evenements
+        return view('Association.Evenement.ListerEvenement');
+             }
+
+
+       
+
     }
 
     /**
@@ -46,11 +72,32 @@ class AssociationController extends Controller
         return view('Association.Evenement.FormuCompteAsso');
     }
 
-    public function formInsert()
+    public function formInsert(Request $request)
     {
-        // ici on va enregistrer sur la table association
+        // Validation des données pour l'association
+        $validatedData = $request->validate([
+            'nomAssociation' => 'required',
+            'slogan' => 'required',
+            'logo' => 'required',
+            'date_creation' => 'required',
+
+        ]);
+        $user=User::find($request->iduser);
+        $association = new Association($validatedData);
+        $user->profile_completed=1;
+        $user->update() ;
+            
         
+        if ($association->save()) {
+            // ici on se redirige vers la liste des evenements
+            return view('Association.Evenement.ListerEvenement');
+
+
+        }
+
+    
     }
+    
 
 
     /**
