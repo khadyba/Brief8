@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evenement;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -12,7 +13,7 @@ class HomeController extends Controller
     public function homepage()
     {
         //
-        return view('AllUsers.ReservationEvenement.listerEvenement');
+        return view('AllUsers.ReservationEvenement.listerEvenement',['evenements'=>Evenement::where('is_deleted',1)->get()]);
     }
 
  public function acceuil()
@@ -39,10 +40,10 @@ class HomeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show()
+    public function show(Request $request )
     {
-        //
-        return view('AllUsers.ReservationEvenement.detailEvenement');
+        $event=Evenement::findOrFail($request->id);
+        return view('AllUsers.ReservationEvenement.detailEvenement',['evenement' => $event]);
     }
 
     /**

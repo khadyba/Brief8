@@ -7,7 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Evenement extends Model
 {
-
+    public function association()
+    {
+        return $this->belongsTo(Association::class, 'association_id');
+    }
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'reservations', 'evenement_id', 'user_id');
+    }
     use HasFactory;
     protected $fillable = [
         'nomEvenement',

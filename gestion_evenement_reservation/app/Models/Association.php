@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Association extends Model
 {
 
-    
+    public function evenement()
+    {
+        return $this->hasMany(Evenement::class);
+    }
     use HasFactory;
     protected $fillable = [
         'nomAssociation',

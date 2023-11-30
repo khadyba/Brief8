@@ -10,6 +10,13 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+
+
+    // Définition de la relation Many-to-Many avec les événements
+    public function evenements()
+    {
+        return $this->belongsToMany(Evenement::class, 'reservation', 'user_id', 'evenement_id'); 
+    }
     use HasApiTokens, HasFactory, Notifiable;
 
     /**

@@ -29,20 +29,6 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
 public function store(Request $request)
 {
     // Validation pour la création de compte
@@ -55,11 +41,8 @@ public function store(Request $request)
         'Role'=> 'required'
         
     ]);
-    // dd($validatedData['Role']);
     // Création d'une nouvelle instance d'utilisateur
-
     $user = new User($validatedData);
-    // dd($validatedData['Role']);
     // On vérifie si le type de compte choisi est user
     if ($validatedData['Role'] === 'user') {
         // On enregistre l'utilisateur comme un utilisateur normal, puis le redirige vers la page de connexion
@@ -67,19 +50,11 @@ public function store(Request $request)
         return redirect()->route('user.create')->with('success', 'Inscription réussie ! Veuillez vous connecter.');
     }
 } elseif($validatedData['Role'] === 'associations') {
-
     if ($user->save()) {
         return view('Authentification.FormConnection');
     }
-
-
 }
-
 }
-    
-  
-    
-
     /**
      * Display the specified resource.
      */
@@ -97,40 +72,42 @@ public function store(Request $request)
     }
 
     public function connection(Request $request){
-       
-        
-        
-        
         // Vérifie si la connexion a réussi
         if ( Auth::attempt([
             'email' => $request->email, 
             'password' => $request->password
         ])) {
-            // Récupère le rôle de l'utilisateur connecté
-            $user = User::where('email', $request->email)->value('Role');
-            // dd($user);
-            // Vérifie le rôle pour décider de la redirection
-            if( $user === "associations" ){
-                // Redirection vers la vue des associations
+            // Récupère le rôle de l'utilisateur connecté 
+            $user=auth()->user();
+
+            if ($user->Role === 'associations') {
                 return redirect()->route('associations.index');
-            } else {
-                // Redirection vers la vue pour les utilisateurs simples
-                return view('AllUsers.Acceuil');
+                
             }
+
+            elseif ($user->Role === 'user') {
+                return view('AllUsers.Acceuil');
+             
+            }
+            return 'error! Veuillez verifier vos identifiante!';
         }
-        
-        // En cas d'échec de la connexion, retour à la page de connexion avec un message d'erreur
-        return back();
-        
-        
 
-
+             // En cas d'échec de la connexion, retour à la page de connexion avec un message d'erreur
         
+            // if ($user->profile_completed==0) {
+            //     return view('AllUsers.Acceuil');
+            // }
+            // Vérifie le rôle pour décider de la redirection
+            // if( $user === "associations" ){
+            //     // Redirection vers la vue des associations
+            //     return redirect()->route('associations.index');
+            // } else {
+            //     // Redirection vers la vue pour les utilisateurs simples
+            //     return view('AllUsers.Acceuil');
+            //}
+        
+       
     }
-
-
-
-
     public function deconnexion(){
         // ici les validation pour la deconnection
         if(Auth::logout() === null){
@@ -148,8 +125,6 @@ public function deconnexionAsso()
         return back()->with('success', 'comment tu es arrivé là, voleur sans te connecter');
     }
 }
-
-
     /**
      * Update the specified resource in storage.
      */

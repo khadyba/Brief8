@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evenement;
 use Illuminate\Http\Request;
 
 class EvenementController extends Controller
@@ -29,9 +30,10 @@ class EvenementController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show_asso(Request $request)
     {
-        //
+        $event=Evenement::findOrFail($request->id);
+        return view('Association.Evenement.detailEvenement',['evenement' => $event]);
     }
 
     /**

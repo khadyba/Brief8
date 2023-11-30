@@ -15,7 +15,7 @@ class AssociationController extends Controller
     public function index()
     {
         // ici on va vers la liste des evenements
-        return view('Association.Evenement.ListerEvenement');
+        return view('Association.Evenement.ListerEvenement',['evenements'=>Evenement::where('is_deleted',0)->get()]);
     }
 
     /**
@@ -34,30 +34,35 @@ class AssociationController extends Controller
     {
         //  ici les validation pour la creation de l'evenement
         $validata=$request->validate([
-            'nomEvenement' =>'required',
+            'nomEvenement' => 'required|max:20',
             'description' =>'required',
             'status' =>'required',
             'image' =>'required',
             'date_limite_inscription' =>'required',
             'date_evenement' =>'required',
-            'association_id' =>'required',
+            // 'association_id' =>'required',
         ]);
 
         $image=$request->file('image');
         if ($image !== null && !$image->getError()) {
             $validata['image'] = $image->store('image', 'public');
         }
-             $evenement= new Evenement($validata);
-             if ($evenement->save()) {
-                // ici on se redirige vers la liste des evenements
-        return view('Association.Evenement.ListerEvenement');
-             }
+    
+        $validata['association_id']=auth()->user()->id;
+        $evenement = new Evenement($validata);
+        if ($evenement->save()) {
+           
+            // return view('Association.Evenement.ListerEvenement');
+            return back()->with('success', 'Vous avez reuisie la publications');
+        }
+        
 
 
        
 
     }
 
+  
     /**
      * Display the specified resource.
      */
@@ -86,16 +91,10 @@ class AssociationController extends Controller
         $association = new Association($validatedData);
         $user->profile_completed=1;
         $user->update() ;
-            
-        
         if ($association->save()) {
             // ici on se redirige vers la liste des evenements
             return view('Association.Evenement.ListerEvenement');
-
-
         }
-
-    
     }
     
 
@@ -103,9 +102,10 @@ class AssociationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Evenement $evenement,$id)
     {
-        return view('Association.Evenement.FormModifierEvenement');
+        $evenement=Evenement::find($id);
+        return view('Association.Evenement.FormModifierEvenement',compact('evenement'));
     }
 
     /**
@@ -114,13 +114,37 @@ class AssociationController extends Controller
     public function update(Request $request, string $id)
     {
         // ici pour les modifications d'un evenement
+ 
+    $validata=$request->validate([
+    'nomEvenement' => 'required|max:20',
+    'description' =>'required',
+    'status' =>'required',
+    'image' =>'required',
+    'date_limite_inscription' =>'required',
+    'date_evenement' =>'required',
+    
+    ]);
+       $evenement=Evenement::findOrFail($id);
+       $image=$request->file('image');
+       
+       if ($image !== null && !$image->getError()) {
+           $validata['image'] = $image->store('image', 'public');
+       }
+       $evenement->update($validata);
+      
+       return redirect()->route('associations.index');
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request,$id)
     {
-        //
+        // ici la fonction pour supprimer un evenement
+        $evenement = Evenement::findOrFail($id); 
+        $evenement->is_deleted = true; 
+        $evenement->update(); 
+        return back();
     }
 }
