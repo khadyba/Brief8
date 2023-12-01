@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Reservation;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Notifications\MailDecliner;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\MailConfirmation;
 use Symfony\Contracts\Service\Attribute\Required;
 
 class ReservationController extends Controller
@@ -60,8 +63,12 @@ class ReservationController extends Controller
                 $reference = Str::random(8);
                  $validata['references']=$reference;
                 $reservation = new Reservation($validata);
-                $reservation->save();
+               if($reservation->save()) {
+                $user= User::Where('id',$userid)->first();
+                $user->notify(new MailConfirmation());
                 return redirect()->route('users.show', $evenement)->with('success', 'votre reservation a été prise en compte');
+               }
+                
                
     } 
 
@@ -73,7 +80,12 @@ class ReservationController extends Controller
         // ici nous allons modifier le statue du reservation 
                     $reservation=Reservation::findOrFail($id);
                     $reservation->etat="ou_pas";
-                    $reservation->update();
+                    if ($reservation->update()) {
+                    $user= User::Where('id',$reservation->user_id)->first();
+                    // dd($user);
+                    $user->notify(new MailDecliner());
+                    }
+                    // $reservation->update()
                     return redirect()->route('associations.show', $reservation->evenement_id)->with('success', 'Vous venez de décliner la reservation');
     }
 
