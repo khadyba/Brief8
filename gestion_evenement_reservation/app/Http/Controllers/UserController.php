@@ -76,8 +76,9 @@ public function store(Request $request)
         if ( Auth::attempt([
             'email' => $request->email, 
             'password' => $request->password
-        ])) {
-            // Récupère le rôle de l'utilisateur connecté 
+            ])) {
+                // Récupère le rôle de l'utilisateur connecté 
+                // dd($request);
             $user=auth()->user();
 
             if ($user->Role === 'associations') {
@@ -89,8 +90,8 @@ public function store(Request $request)
                 return view('AllUsers.Acceuil');
              
             }
-            return 'error! Veuillez verifier vos identifiante!';
         }
+        return 'error! Veuillez verifier vos identifiante!';
 
              // En cas d'échec de la connexion, retour à la page de connexion avec un message d'erreur
         
@@ -105,9 +106,7 @@ public function store(Request $request)
             //     // Redirection vers la vue pour les utilisateurs simples
             //     return view('AllUsers.Acceuil');
             //}
-        
-       
-    }
+         }
     public function deconnexion(){
         // ici les validation pour la deconnection
         if(Auth::logout() === null){

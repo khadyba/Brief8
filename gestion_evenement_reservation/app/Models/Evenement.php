@@ -26,4 +26,9 @@ class Evenement extends Model
         'is_deleted',
         'association_id',
     ];
+
+    public function   reservation(){
+        return $this->belongsToMany(Reservation::class);
+     
+     }
 }

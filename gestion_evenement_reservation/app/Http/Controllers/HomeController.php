@@ -13,7 +13,7 @@ class HomeController extends Controller
     public function homepage()
     {
         //
-        return view('AllUsers.ReservationEvenement.listerEvenement',['evenements'=>Evenement::where('is_deleted',1)->get()]);
+        return view('AllUsers.ReservationEvenement.listerEvenement',['evenements'=>Evenement::where('is_deleted',0)->get()]);
     }
 
  public function acceuil()

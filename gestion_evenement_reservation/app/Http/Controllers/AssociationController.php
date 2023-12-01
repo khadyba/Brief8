@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Evenement;
 use App\Models\Association;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 
 class AssociationController extends Controller
@@ -66,10 +67,10 @@ class AssociationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show()
     {
         // ici nous allons afficher la liste des client inscrit a un evenement
-        return view('Association.Evenement.ListerUtilisateurInscrit');
+        return view('Association.Evenement.ListerUtilisateurInscrit',['reservations'=>Reservation::all()]);
     }
 
     public function formAssociation()
@@ -145,6 +146,6 @@ class AssociationController extends Controller
         $evenement = Evenement::findOrFail($id); 
         $evenement->is_deleted = true; 
         $evenement->update(); 
-        return back();
+        return back()->with('success', 'Evenement supprimer avec success!');
     }
 }
